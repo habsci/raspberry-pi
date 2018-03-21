@@ -1,22 +1,4 @@
-"""
-CCS811 Air Quality Sensor Example Code
-Author: Sasa Saftic (sasa@infincube.si)
-infincube d.o.o.
-Date: June 8th, 2017
-License: This code is public domain
-
-Based on Sparkfuns Example code written by Nathan Seidle
-
-Read the TVOC and CO2 values from the SparkFun CSS811 breakout board
-
-A new sensor requires at 48-burn in. Once burned in a sensor requires
-20 minutes of run in before readings are considered good.
-
-Tested on Raspberry Pi Zero W
-"""
-
 import pigpio
-import time
 
 CCS811_ADDR = 0x5B  # default I2C Address
 

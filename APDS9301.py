@@ -1,6 +1,6 @@
 import smbus, time, math, sys
 
-class adps9300(object):
+class APDS9301(object):
 	bus = None;
 	addr = 0x39;
 
@@ -111,12 +111,3 @@ class adps9300(object):
 			lux = 0
 
 		return lux
-
-
-if __name__ == "__main__":
-	try:
-		x = adps9300()
-		print "Lux value is %s" % x.read_lux()
-	except IOError, e:
-		print e
-		print "Error creating connection to i2c.  This must be run as root"
