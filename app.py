@@ -10,23 +10,24 @@ DHT11_pin = 4
 ccs811_sensor.setup()
 
 def logSensorValues():
-  	humidity, temperature = Adafruit_DHT.read_retry(humidity_sensor, DHT11_pin)
-		lux = adps9300_sensor.read_lux()
+    humidity, temperature = Adafruit_DHT.read_retry(humidity_sensor, DHT11_pin)
+    lux = adps9300_sensor.read_lux()
 
-		if ccs811_sensor.data_available():
-				ccs811_sensor.read_logorithm_results()
-		elif ccs811_sensor.check_for_error():
-				ccs811_sensor.print_error()
+    if ccs811_sensor.data_available():
+        ccs811_sensor.read_logorithm_results()
+    elif ccs811_sensor.check_for_error():
+        ccs811_sensor.print_error()
 
-		output = "%d,%d,%d,%d,%d" % (temperature, humidity, lux, ccs811_sensor.CO2, ccs811_sensor.tVOC)
-		print(output)
+    output = "%d,%d,%d,%d,%d" % (temperature, humidity, lux, ccs811_sensor.CO2, ccs811_sensor.tVOC)
+    print(output)
 
-		with open('newfile.csv', 'a') as file:
-				file.write(output + "\n")
+    with open('newfile.csv', 'a') as file:
+        file.write(output + "\n")
+
 
 schedule.every(30).minutes.do(logSensorValues)
 
 while True:
-		schedule.run_pending()
-		time.sleep(1)
+    schedule.run_pending()
+    time.sleep(1)
 
