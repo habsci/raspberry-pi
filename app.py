@@ -34,14 +34,14 @@ lightPin = 13
 fanPin = 15
 
 
-def createTimer(interval, function, arg1, arg2, arg3, arg4):
-    t = Timer(interval, function, arg1, arg2, arg3, arg4)
+def createTimer(interval, function, args):
+    t = Timer(interval, function, args)
     t.start()
 
 def serviceToggle(pin, state, onInterval, offInterval):
     interval = onInterval if state else offInterval # Pick the interval based on the state we're switching to
     GPIO.output(pin, state) # Change the state of the service
-    createTimer(interval, serviceToggle, pin, not state, onInterval, offInterval) # Create a timer to toggle the service
+    createTimer(interval, serviceToggle, [ pin, not state, onInterval, offInterval ]) # Create a timer to toggle the service
 
 def setup():
     GPIO.setup(pumpPin, GPIO.OUT)
