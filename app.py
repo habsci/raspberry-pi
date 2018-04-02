@@ -48,9 +48,9 @@ def setup():
     GPIO.setup(lightPin, GPIO.OUT)
     GPIO.setup(fanPin, GPIO.OUT)
 
-    createServiceToggleCycle(lightPin, HIGH, 10, 10)
-    #createServiceToggleCycle(pumpPin, HIGH, 60, 60 * 120)
-    #createServiceToggleCycle(fanPin, HIGH, 60, 60 * 120)
+    serviceToggle(lightPin, HIGH, 10, 10)
+    #serviceToggle(pumpPin, HIGH, 60, 60 * 120)
+    #serviceToggle(fanPin, HIGH, 60, 60 * 120)
 
 setup()
 
