@@ -34,8 +34,8 @@ lightPin = 13
 fanPin = 15
 
 
-def createTimer(interval, function):
-    t = Timer(interval, function)
+def createTimer(interval, function, arg1, arg2, arg3, arg4):
+    t = Timer(interval, function, arg1, arg2, arg3, arg4)
     t.start()
 
 def serviceToggle(pin, state, onInterval, offInterval):
