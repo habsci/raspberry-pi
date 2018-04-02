@@ -24,14 +24,14 @@
 #     with open('newfile.csv', 'a') as file:
 #         file.write(output + "\n")
 from threading import Timer
+from collections import namedtuple
 import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
 HIGH = True
 LOW = False
-pumpPin = 11
-lightPin = 13
-fanPin = 15
+PinStruct = namedtuple('Pins', ['lights', 'pump', 'fans'])
+ServicePins = PinStruct(lights=11, pump=13, fans=15)
 
 
 def createTimer(interval, function):
@@ -44,17 +44,13 @@ def serviceToggle(pin, state, onInterval, offInterval):
     createTimer(interval, serviceToggle, pin, not state, onInterval, offInterval) # Create a timer to toggle the service
 
 def setup():
-    GPIO.setup(pumpPin, GPIO.OUT)
-    GPIO.setup(lightPin, GPIO.OUT)
-    GPIO.setup(fanPin, GPIO.OUT)
+    for pin in ServicePins:
+        GPIO.setup(pin, GPIO.OUT)
+        GPIP.output(pin, LOW)
 
-    createServiceToggleCycle(lightPin, HIGH, 10, 10)
-    #createServiceToggleCycle(pumpPin, HIGH, 60, 60 * 120)
-    #createServiceToggleCycle(fanPin, HIGH, 60, 60 * 120)
+    serviceToggle(ServicePins.lights, HIGH, 60 * 60 * 14, 60 * 60 * 10)
+    serviceToggle(ServicePins.pump, HIGH, 60, 60 * 120)
+    serviceToggle(ServicePins.fans, HIGH, 60, 60 * 120)
 
 setup()
-
-while True:
-    schedule.run_pending()
-    time.sleep(1)
 
