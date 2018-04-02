@@ -26,7 +26,7 @@
 from threading import Timer
 import RPi.GPIO as GPIO
 
-GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BOARD)
 HIGH = True
 LOW = False
 pumpPin = 11
@@ -47,6 +47,10 @@ def setup():
     GPIO.setup(pumpPin, GPIO.OUT)
     GPIO.setup(lightPin, GPIO.OUT)
     GPIO.setup(fanPin, GPIO.OUT)
+
+    GPIO.output(pumpPin, LOW)
+    GPIO.output(lightPin, LOW)
+    GPIO.output(fanPin, LOW)
 
     serviceToggle(lightPin, HIGH, 10, 10)
     #serviceToggle(pumpPin, HIGH, 60, 60 * 120)
