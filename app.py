@@ -50,8 +50,13 @@ def serviceToggle(pin, state, onInterval, offInterval):
 
 def storeSensorData():
     humidity, temperature = Adafruit_DHT.read_retry(humidity_sensor, Pins.dht11)
-    output = "humidity: %d, temperature: %d" % (humidity, temperature)
-    print(output)
+
+    if (humidity == None || temperature == None):
+        createTimer(60 * 5, storeSensorData)
+        return
+
+    print(humdity)
+    print(temperature)
 
     url = 'https://habsci.herokuapp.com/services'
     parameters = {
@@ -62,8 +67,10 @@ def storeSensorData():
     req = session.post(url, data = parameters)
     print(req.status_code)
 
-    with open('data.csv', 'a') as file:
-        file.write(output + "\n")
+    with open('data.csv', 'w') as file:
+        fieldnames = [ 'humidity', 'temperature' ]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writerow({'humidity': humidity, 'temperature': temperature})
 
     createTimer(60 * 5, storeSensorData)
 
@@ -75,6 +82,11 @@ def setup():
     serviceToggle(Pins.lights, HIGH, 60 * 60 * 14, 60 * 60 * 10)
     serviceToggle(Pins.pump, HIGH, 60, 60 * 120)
     serviceToggle(Pins.fans, HIGH, 60, 60 * 120)
+
+    with open('data.csv', 'w') as file:
+        fieldnames = [ 'humidity', 'temperature' ]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
 
     storeSensorData()
 
