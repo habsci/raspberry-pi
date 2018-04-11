@@ -51,7 +51,7 @@ def serviceToggle(pin, state, onInterval, offInterval):
 def storeSensorData():
     humidity, temperature = Adafruit_DHT.read_retry(humidity_sensor, Pins.dht11)
 
-    if (humidity == None || temperature == None):
+    if (humidity == None or temperature == None):
         createTimer(60 * 5, storeSensorData)
         return
 
