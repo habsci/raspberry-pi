@@ -27,8 +27,7 @@ from threading import Timer
 from collections import namedtuple
 from time import sleep
 import RPi.GPIO as GPIO
-import Adafruit_DHT
-import requests
+import Adafruit_DHT, requests, csv
 
 humidity_sensor = Adafruit_DHT.DHT11
 
