@@ -10,7 +10,7 @@
 # ccs811_sensor.setup()
 
 # def logSensorValues():
-#     humidity, temperature = Adafruit_DHT.read_retry(humidity_sensor, DHT11_pin)
+    # humidity, temperature = Adafruit_DHT.read_retry(humidity_sensor, DHT11_pin)
 #     lux = adps9300_sensor.read_lux()
 
 #     if ccs811_sensor.data_available():
@@ -24,14 +24,19 @@
 #     with open('newfile.csv', 'a') as file:
 #         file.write(output + "\n")
 from threading import Timer
+from collections import namedtuple
+from time import sleep
 import RPi.GPIO as GPIO
+import Adafruit_DHT
+import requests
+
+humidity_sensor = Adafruit_DHT.DHT11
 
 GPIO.setmode(GPIO.BOARD)
 HIGH = True
 LOW = False
-pumpPin = 11
-lightPin = 13
-fanPin = 15
+PinStruct = namedtuple('Pins', ['lights', 'pump', 'fans', 'dht11'])
+Pins = PinStruct(lights=11, pump=13, fans=15, dht11=7)
 
 
 def createTimer(interval, function, args):
@@ -43,18 +48,36 @@ def serviceToggle(pin, state, onInterval, offInterval):
     GPIO.output(pin, state) # Change the state of the service
     createTimer(interval, serviceToggle, [ pin, not state, onInterval, offInterval ]) # Create a timer to toggle the service
 
+def storeSensorData():
+    humidity, temperature = Adafruit_DHT.read_retry(humidity_sensor, Pins.dht11)
+    output = "humidity: %d, temperature: %d" % (humidity, temperature)
+    print(output)
+
+    url = 'https://habsci.herokuapp.com/services'
+    parameters = {
+        'humidity': humidity,
+        'temperature': temperature,
+    }
+    session = requests.Session()
+    req = session.post(url, data = parameters)
+    print(req.status_code)
+
+    with open('data.csv', 'a') as file:
+        file.write(output + "\n")
+
+    createTimer(60 * 5, storeSensorData)
+
 def setup():
-    GPIO.setup(pumpPin, GPIO.OUT)
-    GPIO.setup(lightPin, GPIO.OUT)
-    GPIO.setup(fanPin, GPIO.OUT)
+    for pin in Pins:
+        GPIO.setup(pin, GPIO.OUT)
+        GPIO.output(pin, LOW)
 
-    GPIO.output(pumpPin, LOW)
-    GPIO.output(lightPin, LOW)
-    GPIO.output(fanPin, LOW)
+    serviceToggle(Pins.lights, HIGH, 60 * 60 * 14, 60 * 60 * 10)
+    serviceToggle(Pins.pump, HIGH, 60, 60 * 120)
+    serviceToggle(Pins.fans, HIGH, 60, 60 * 120)
 
-    serviceToggle(lightPin, HIGH, 10, 10)
-    #serviceToggle(pumpPin, HIGH, 60, 60 * 120)
-    #serviceToggle(fanPin, HIGH, 60, 60 * 120)
+    storeSensorData()
 
+sleep(30)
 setup()
 
