@@ -30,13 +30,13 @@ import RPi.GPIO as GPIO
 import Adafruit_DHT, requests, csv
 
 
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 HIGH = True
 LOW = False
 PinStruct = namedtuple('Pins', ['lights', 'pump', 'fan', 'dht'])
 fieldnames = [ 'humidity', 'temperature' ]
 
-Pins = PinStruct(lights=11, pump=13, fan=15, dht=7)
+Pins = PinStruct(lights=17, pump=27, fan=22, dht=4)
 dht_sensor = Adafruit_DHT.DHT22
 
 def createTimer(interval, function, args=[]):
