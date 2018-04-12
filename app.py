@@ -49,7 +49,7 @@ def serviceToggle(pin, state, onInterval, offInterval):
     createTimer(interval, serviceToggle, pin, not state, onInterval, offInterval) # Create a timer to toggle the service
 
 def writeSensorData(interval):
-    if humidity is not None and temperature is not None:
+    if humidity is None or temperature is None:
         print('DHT22 values were None, retrying in 5 seconds...')
         createTimer(5, writeSensorData)
         return
@@ -83,7 +83,7 @@ def map_value(value, fromMin, fromMax, toMin, toMax):
 def updateFan():
     humidity, temperature = Adafruit_DHT.read_retry(dht_sensor, Pins.dht)
 
-    if humidity is not None and temperature is not None:
+    if humidity is None or temperature is None:
         print('DHT22 values were None, retrying in 5 seconds...')
         createTimer(5, updateFan)
         return
@@ -108,7 +108,6 @@ def setup():
 def main():
     serviceToggle(Pins.lights, HIGH, 60 * 60 * 14, 60 * 60 * 10)
     serviceToggle(Pins.pump, HIGH, 60, 60 * 120)
-    serviceToggle(Pins.fans, HIGH, 60, 60 * 120)
 
     with open('data.csv', 'w') as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
