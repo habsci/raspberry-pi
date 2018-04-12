@@ -33,7 +33,7 @@ import Adafruit_DHT, requests, csv
 GPIO.setmode(GPIO.BOARD)
 HIGH = True
 LOW = False
-PinStruct = namedtuple('Pins', ['lights', 'pump', 'fans', 'dht'])
+PinStruct = namedtuple('Pins', ['lights', 'pump', 'fan', 'dht'])
 fieldnames = [ 'humidity', 'temperature' ]
 
 Pins = PinStruct(lights=11, pump=13, fan=15, dht=7)
@@ -95,7 +95,7 @@ def updateFan():
 
     fan_speed = map_value(temperature, 20, 28, 0, 100)
 
-    if temperature < 20
+    if temperature < 20:
         fan_speed = 0
 
     fan.ChangeDutyCycle(fan_speed)
@@ -115,10 +115,10 @@ def setup():
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
 
-    writeSensorData(60 * 5)
+    #writeSensorData(60 * 5)
     fan.start(0)
     updateFan()
 
-sleep(30)
+#sleep(30)
 setup()
 
