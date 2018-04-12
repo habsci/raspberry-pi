@@ -37,9 +37,7 @@ PinStruct = namedtuple('Pins', ['lights', 'pump', 'fan', 'dht'])
 fieldnames = [ 'humidity', 'temperature' ]
 
 Pins = PinStruct(lights=11, pump=13, fan=15, dht=7)
-dht_sensor = Adafruit_DHT.DHT11
-fan = GPIO.PWM(Pins.fan, 100) # Fan PWM pin and frequency
-
+dht_sensor = Adafruit_DHT.DHT22
 
 def createTimer(interval, function, args=[]):
     t = Timer(interval, function, args)
@@ -107,6 +105,7 @@ def setup():
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, LOW)
 
+def main():
     serviceToggle(Pins.lights, HIGH, 60 * 60 * 14, 60 * 60 * 10)
     serviceToggle(Pins.pump, HIGH, 60, 60 * 120)
     serviceToggle(Pins.fans, HIGH, 60, 60 * 120)
@@ -121,4 +120,6 @@ def setup():
 
 #sleep(30)
 setup()
+fan = GPIO.PWM(Pins.fan, 100) # Fan PWM pin and frequency
+main()
 
