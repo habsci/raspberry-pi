@@ -46,7 +46,7 @@ def createTimer(interval, function, args=[]):
 def serviceToggle(pin, state, onInterval, offInterval):
     interval = onInterval if state else offInterval # Pick the interval based on the state we're switching to
     GPIO.output(pin, state) # Change the state of the service
-    createTimer(interval, serviceToggle, pin, not state, onInterval, offInterval) # Create a timer to toggle the service
+    createTimer(interval, serviceToggle, [ pin, not state, onInterval, offInterval ]) # Create a timer to toggle the service
 
 def writeSensorData(interval):
     if humidity is None or temperature is None:
