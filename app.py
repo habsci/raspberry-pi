@@ -88,10 +88,8 @@ def updateFan():
         createTimer(5, updateFan)
         return
 
-    print(humidity)
-    print(temperature)
-
     fan_speed = map_value(temperature, 20, 28, 0, 100)
+    print(f'humidity: {humidity} | temperature: {temperature} | {fan_speed}')
 
     if temperature < 20:
         fan_speed = 0
