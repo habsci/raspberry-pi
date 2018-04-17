@@ -50,20 +50,16 @@ def serviceToggle(pin, state, onInterval, offInterval):
 
 def writeSensorData(interval):
     humidity, temperature = Adafruit_DHT.read_retry(dht_sensor, Pins.dht)
-    lux = adps9300_sensor.read_lux()
-    air_quality = 0
 
-    if ccs811_sensor.data_available():
-        air_quality = ccs811_sensor.read_logorithm_results()
-    elif ccs811_sensor.check_for_error():
-        air_quality = 'error'
+    if humidity is None or temperature is None:
+        print('DHT22 values were None, retrying in 5 seconds...')
+        createTimer(5, writeSensorData)
+        return
 
-    url = 'https://habsci-server.herokuapp.com/services'
+    url = 'https://habsci.herokuapp.com/services'
     parameters = {
         'humidity': humidity,
         'temperature': temperature,
-	'lux': lux,
-	'air_quality': air_quality,
     }
     session = requests.Session()
     req = session.post(url, data = parameters)
