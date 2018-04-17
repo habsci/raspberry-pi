@@ -34,7 +34,7 @@ GPIO.setmode(GPIO.BCM)
 HIGH = True
 LOW = False
 PinStruct = namedtuple('Pins', ['lights', 'pump', 'fan', 'dht'])
-fieldnames = [ 'humidity', 'temperature' ]
+fieldnames = [ 'humidity', 'temperature', 'lux', 'air_quality' ]
 
 Pins = PinStruct(lights=17, pump=27, fan=22, dht=4)
 dht_sensor = Adafruit_DHT.DHT22
@@ -43,27 +43,33 @@ def createTimer(interval, function, args=[]):
     t = Timer(interval, function, args)
     t.start()
 
+def defaultError(value):
+    if value is None:
+        return 'error'
+    return value
+
 def serviceToggle(pin, state, onInterval, offInterval):
     interval = onInterval if state else offInterval # Pick the interval based on the state we're switching to
     GPIO.output(pin, state) # Change the state of the service
     createTimer(interval, serviceToggle, [ pin, not state, onInterval, offInterval ]) # Create a timer to toggle the service
 
 def writeSensorData(interval):
+    humidity, temperature, lux, air_quality = None
+
     humidity, temperature = Adafruit_DHT.read_retry(dht_sensor, Pins.dht)
-    lux = adps9300_sensor.read_lux()
-    air_quality = 0
+    temperature = defaultError(temperature)
+    humidity = defaultError(humidity)
+    lux = defaultError(adps9300_sensor.read_lux())
 
     if ccs811_sensor.data_available():
-        air_quality = ccs811_sensor.read_logorithm_results()
-    elif ccs811_sensor.check_for_error():
-        air_quality = 'error'
+        air_quality = defaultError(ccs811_sensor.read_logorithm_results())
 
     url = 'https://habsci-server.herokuapp.com/services'
     parameters = {
         'humidity': humidity,
         'temperature': temperature,
-	'lux': lux,
-	'air_quality': air_quality,
+	    'lux': lux,
+	    'air_quality': air_quality,
     }
     session = requests.Session()
     req = session.post(url, data = parameters)
@@ -71,7 +77,7 @@ def writeSensorData(interval):
 
     with open('data.csv', 'w') as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writerow({'humidity': humidity, 'temperature': temperature})
+        writer.writerow({'humidity': humidity, 'temperature': temperature, 'lux': lux, 'air_quality': air_quality})
 
     createTimer(interval, writeSensorData)
 
