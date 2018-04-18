@@ -29,12 +29,22 @@ fieldnames = [ 'humidity', 'temperature', 'CO2', 'tVOC' ]
 
 Pins = PinStruct(lights=17, pump=27, fan=22, dht=4)
 dht_sensor = Adafruit_DHT.DHT22
-ccs811_sensor = CCS811()
+ccs811_sensor = None
+
 # adps9300_sensor = APDS9301()
 
 def createTimer(interval, function, args=[]):
     t = Timer(interval, function, args)
     t.start()
+
+def initializeCCS811(interval):
+    try:
+        ccs811_sensor = CCS811()
+        ccs811_sensor.setup()
+    except:
+        print('Could not initialize ccs811 sensor')
+
+    createTimer(interval, function, [interval])
 
 def defaultError(value):
     if value is None:
@@ -54,7 +64,7 @@ def writeSensorData(interval):
     tVOC = None
     CO2 = None
 
-    if ccs811_sensor.data_available():
+    if ccs811_sensor is not None and ccs811_sensor.data_available():
         defaultError(ccs811_sensor.read_logorithm_results())
         CO2 = defaultError(ccs811_sensor.tVOC)
         tVOC = defaultError(ccs811_sensor.CO2)
@@ -63,8 +73,6 @@ def writeSensorData(interval):
     parameters = {
         'humidity': humidity,
         'temperature': temperature,
-	    'lux': lux,
-	    'air_quality': air_quality,
     }
     session = requests.Session()
     req = session.post(url, data = parameters)
@@ -111,7 +119,7 @@ def updateFan():
 
 
 def setup():
-    ccs811_sensor.setup()
+    initializeCCS811(5)
     for pin in Pins:
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, LOW)
