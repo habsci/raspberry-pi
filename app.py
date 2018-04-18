@@ -25,7 +25,7 @@ GPIO.setmode(GPIO.BCM)
 HIGH = True
 LOW = False
 PinStruct = namedtuple('Pins', ['lights', 'pump', 'fan', 'dht'])
-fieldnames = [ 'humidity', 'temperature', 'lux', 'CO2', 'tVOC' ]
+fieldnames = [ 'humidity', 'temperature', 'CO2', 'tVOC' ]
 
 Pins = PinStruct(lights=17, pump=27, fan=22, dht=4)
 dht_sensor = Adafruit_DHT.DHT22
@@ -70,9 +70,14 @@ def writeSensorData(interval):
     req = session.post(url, data = parameters)
     print(req.status_code)
 
+    print(humidity)
+    print(temperature)
+    print(CO2)
+    print(tVOC)
+
     with open('data.csv', 'w') as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writerow({'humidity': humidity, 'temperature': temperature, 'lux': lux, 'CO2': CO2, 'tVOC': tVOC})
+        writer.writerow({'humidity': humidity, 'temperature': temperature, 'CO2': CO2, 'tVOC': tVOC})
 
     createTimer(interval, writeSensorData)
 
