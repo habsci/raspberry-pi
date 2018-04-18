@@ -1,17 +1,3 @@
-# def logSensorValues():
-    # humidity, temperature = Adafruit_DHT.read_retry(humidity_sensor, DHT11_pin)
-#     lux = adps9300_sensor.read_lux()
-
-#     if ccs811_sensor.data_available():
-#         ccs811_sensor.read_logorithm_results()
-#     elif ccs811_sensor.check_for_error():
-#         ccs811_sensor.print_error()
-
-#     output = "%d,%d,%d,%d,%d" % (temperature, humidity, lux, ccs811_sensor.CO2, ccs811_sensor.tVOC)
-#     print(output)
-
-#     with open('newfile.csv', 'a') as file:
-#         file.write(output + "\n")
 from threading import Timer
 from collections import namedtuple
 from time import sleep
@@ -25,12 +11,11 @@ GPIO.setmode(GPIO.BCM)
 HIGH = True
 LOW = False
 PinStruct = namedtuple('Pins', ['lights', 'pump', 'fan', 'dht'])
-fieldnames = [ 'humidity', 'temperature', 'CO2', 'tVOC' ]
+fieldnames = [ 'humidity', 'temperature' ]
 
 Pins = PinStruct(lights=17, pump=27, fan=22, dht=4)
 dht_sensor = Adafruit_DHT.DHT22
-ccs811_sensor = None
-
+# ccs811_sensor = None
 # adps9300_sensor = APDS9301()
 
 def createTimer(interval, function, args=[]):
@@ -38,12 +23,12 @@ def createTimer(interval, function, args=[]):
     t.start()
 
 def initializeCCS811(interval):
-    failed = True
+    failed = False
     try:
         ccs811_sensor = CCS811()
         ccs811_sensor.setup()
     except:
-        flag = False
+        failed = True
         print('Could not initialize ccs811 sensor')
 
     if failed:
@@ -64,13 +49,13 @@ def writeSensorData(interval):
     temperature = defaultError(temperature)
     humidity = defaultError(humidity)
     # lux = defaultError(adps9300_sensor.read_lux())
-    tVOC = None
-    CO2 = None
+    # tVOC = None
+    # CO2 = None
 
-    if ccs811_sensor is not None and ccs811_sensor.data_available():
-        defaultError(ccs811_sensor.read_logorithm_results())
-        CO2 = defaultError(ccs811_sensor.tVOC)
-        tVOC = defaultError(ccs811_sensor.CO2)
+    # if ccs811_sensor is not None and ccs811_sensor.data_available():
+    #     defaultError(ccs811_sensor.read_logorithm_results())
+    #     CO2 = defaultError(ccs811_sensor.tVOC)
+    #     tVOC = defaultError(ccs811_sensor.CO2)
 
     url = 'https://habsci-server.herokuapp.com/services'
     parameters = {
@@ -83,12 +68,10 @@ def writeSensorData(interval):
 
     print(humidity)
     print(temperature)
-    print(CO2)
-    print(tVOC)
 
     with open('data.csv', 'w') as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writerow({'humidity': humidity, 'temperature': temperature, 'CO2': CO2, 'tVOC': tVOC})
+        writer.writerow({'humidity': humidity, 'temperature': temperature})
 
     createTimer(interval, writeSensorData)
 
@@ -112,7 +95,7 @@ def updateFan():
         return
 
     fan_speed = map_value(temperature, 20, 28, 0, 100)
-    print("humidity: %d | temperature: %d | fan speed: %d" % (humidity, temperature, fan_speed))
+    #print("humidity: %d | temperature: %d | fan speed: %d" % (humidity, temperature, fan_speed))
 
     if temperature < 20:
         fan_speed = 0
@@ -122,7 +105,6 @@ def updateFan():
 
 
 def setup():
-    initializeCCS811(5)
     for pin in Pins:
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, LOW)
@@ -135,7 +117,7 @@ def main():
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
 
-    writeSensorData(60 * 5)
+    writeSensorData(5)
     fan.start(0)
     updateFan()
 
