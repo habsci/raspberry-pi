@@ -2,6 +2,7 @@ from threading import Timer
 from collections import namedtuple
 from time import sleep
 import RPi.GPIO as GPIO
+from picamera import PiCamera
 from CCS811 import CCS811
 # from APDS9301 import APDS9301
 import Adafruit_DHT, requests, csv
@@ -15,8 +16,11 @@ fieldnames = [ 'humidity', 'temperature' ]
 
 Pins = PinStruct(lights=17, pump=27, fan=22, dht=4)
 dht_sensor = Adafruit_DHT.DHT22
+camera = PiCamera()
+imageNumber = 0
 # ccs811_sensor = None
 # adps9300_sensor = APDS9301()
+
 
 def createTimer(interval, function, args=[]):
     t = Timer(interval, function, args)
@@ -34,17 +38,30 @@ def initializeCCS811(interval):
     if failed:
         createTimer(interval, initializeCCS811, [interval])
 
+
 def defaultError(value):
     if value is None:
         return 'error'
     return value
+
 
 def serviceToggle(pin, state, onInterval, offInterval):
     interval = onInterval if state else offInterval # Pick the interval based on the state we're switching to
     GPIO.output(pin, state) # Change the state of the service
     createTimer(interval, serviceToggle, [ pin, not state, onInterval, offInterval ]) # Create a timer to toggle the service
 
+
+def captureImage():
+    global imageNumber
+    camera.start_preview()
+    sleep(2)
+    camera.capture("/home/pi/Desktop/Github/raspberry-pi/image%s.jpg" % imageNumber)
+    camera.stop_preview()
+    imageNumber += 1
+
+
 def writeSensorData(interval):
+    captureImage()
     humidity, temperature = Adafruit_DHT.read_retry(dht_sensor, Pins.dht)
     temperature = defaultError(temperature)
     humidity = defaultError(humidity)
