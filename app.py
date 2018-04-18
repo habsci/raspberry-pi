@@ -17,7 +17,7 @@ from collections import namedtuple
 from time import sleep
 import RPi.GPIO as GPIO
 from CCS811 import CCS811
-from APDS9301 import APDS9301
+# from APDS9301 import APDS9301
 import Adafruit_DHT, requests, csv
 
 
@@ -30,7 +30,7 @@ fieldnames = [ 'humidity', 'temperature', 'lux', 'CO2', 'tVOC' ]
 Pins = PinStruct(lights=17, pump=27, fan=22, dht=4)
 dht_sensor = Adafruit_DHT.DHT22
 ccs811_sensor = CCS811()
-adps9300_sensor = APDS9301()
+# adps9300_sensor = APDS9301()
 
 def createTimer(interval, function, args=[]):
     t = Timer(interval, function, args)
@@ -50,7 +50,7 @@ def writeSensorData(interval):
     humidity, temperature = Adafruit_DHT.read_retry(dht_sensor, Pins.dht)
     temperature = defaultError(temperature)
     humidity = defaultError(humidity)
-    lux = defaultError(adps9300_sensor.read_lux())
+    # lux = defaultError(adps9300_sensor.read_lux())
     tVOC = None
     CO2 = None
 
