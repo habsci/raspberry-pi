@@ -26,6 +26,7 @@ def createTimer(interval, function, args=[]):
     t = Timer(interval, function, args)
     t.start()
 
+
 def initializeCCS811(interval):
     failed = False
     try:
@@ -45,13 +46,8 @@ def defaultError(value):
     return value
 
 
-def serviceToggle(pin, state, onInterval, offInterval):
-    interval = onInterval if state else offInterval # Pick the interval based on the state we're switching to
-    GPIO.output(pin, state) # Change the state of the service
-    createTimer(interval, serviceToggle, [ pin, not state, onInterval, offInterval ]) # Create a timer to toggle the service
-
-
 def captureImage():
+    sleep(10)
     global imageNumber
     camera.start_preview()
     sleep(2)
@@ -60,8 +56,17 @@ def captureImage():
     imageNumber += 1
 
 
+def serviceToggle(pin, state, onInterval, offInterval):
+    interval = onInterval if state else offInterval # Pick the interval based on the state we're switching to
+    GPIO.output(pin, state) # Change the state of the service
+
+    if pin is Pins.lights:
+        captureImage()
+
+    createTimer(interval, serviceToggle, [ pin, not state, onInterval, offInterval ]) # Create a timer to toggle the service
+
+
 def writeSensorData(interval):
-    captureImage()
     humidity, temperature = Adafruit_DHT.read_retry(dht_sensor, Pins.dht)
     temperature = defaultError(temperature)
     humidity = defaultError(humidity)
@@ -92,6 +97,7 @@ def writeSensorData(interval):
 
     createTimer(interval, writeSensorData, [interval])
 
+
 def map_value(value, fromMin, fromMax, toMin, toMax):
     # Figure out how 'wide' each range is
     fromSpan = fromMax - fromMin
@@ -102,6 +108,7 @@ def map_value(value, fromMin, fromMax, toMin, toMax):
 
     # Convert the 0-1 range into a value in the right range.
     return toMin + (valueScaled * toSpan)
+
 
 def updateFan():
     humidity, temperature = Adafruit_DHT.read_retry(dht_sensor, Pins.dht)
@@ -118,7 +125,7 @@ def updateFan():
         fan_speed = 0
 
     fan.ChangeDutyCycle(fan_speed)
-    createTimer(1, updateFan)
+    createTimer(5, updateFan)
 
 
 def setup():
@@ -126,19 +133,21 @@ def setup():
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, LOW)
 
-def main():
-    serviceToggle(Pins.lights, HIGH, 60 * 60 * 14, 60 * 60 * 10)
-    serviceToggle(Pins.pump, HIGH, 60, 60 * 120)
 
+def main():
     with open('data.csv', 'w') as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
 
-    writeSensorData(5)
+    serviceToggle(Pins.lights, HIGH, 60 * 60 * 14, 60 * 60 * 10)
+    serviceToggle(Pins.pump, HIGH, 60, 60 * 120)
+
+    writeSensorData(5 * 60)
     fan.start(0)
     updateFan()
 
-#sleep(30)
+
+sleep(30)
 setup()
 fan = GPIO.PWM(Pins.fan, 100) # Fan PWM pin and frequency
 main()
