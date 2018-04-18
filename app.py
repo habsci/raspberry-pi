@@ -38,13 +38,16 @@ def createTimer(interval, function, args=[]):
     t.start()
 
 def initializeCCS811(interval):
+    failed = True
     try:
         ccs811_sensor = CCS811()
         ccs811_sensor.setup()
     except:
+        flag = False
         print('Could not initialize ccs811 sensor')
 
-    createTimer(interval, function, [interval])
+    if failed:
+        createTimer(interval, initializeCCS811, [interval])
 
 def defaultError(value):
     if value is None:
