@@ -73,7 +73,7 @@ def writeSensorData(interval):
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writerow({'humidity': humidity, 'temperature': temperature})
 
-    createTimer(interval, writeSensorData)
+    createTimer(interval, writeSensorData, [interval])
 
 def map_value(value, fromMin, fromMax, toMin, toMax):
     # Figure out how 'wide' each range is
