@@ -31,7 +31,7 @@ class App:
         self.services = Services(LIGHTS_PIN, PUMP_PIN, FAN_PIN)
 
 
-    def write_sensor_data(interval):
+    def write_sensor_data(self, interval):
         temperature = default_error(self.sensor.temperature)
         humidity = default_error(self.sensor.humidity)
 
