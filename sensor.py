@@ -1,8 +1,9 @@
 from collections import namedtuple
 import Adafruit_DHT
 
+PinStruct = namedtuple('Pins', ['dht'])
+
 class Sensors:
-    PinStruct = namedtuple('Pins', ['dht'])
     humidity = 0
     temperature = 0
 
