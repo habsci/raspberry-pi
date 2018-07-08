@@ -1,3 +1,4 @@
+from collections import namedtuple
 from time import sleep
 import RPi.GPIO as GPIO
 from picamera import PiCamera
