@@ -27,7 +27,7 @@ class Services:
 
         self.fan = GPIO.PWM(self.pins.fan, 100) # Fan PWM pin and frequency
         current_time = datetime.now()
-        if current_time.hour <= 7 || 19 >= current_time.hour:
+        if current_time.hour <= 7 or 19 >= current_time.hour:
             self.toggle_service(self.pins.lights, HIGH)
         
     
