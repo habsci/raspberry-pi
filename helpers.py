@@ -1,6 +1,6 @@
 from threading import Timer
 
-def create_timer(self, interval, function, args=[]):
+def create_timer(interval, function, args=[]):
     t = Timer(interval, function, args)
     t.start()
 
