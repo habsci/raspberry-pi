@@ -16,11 +16,11 @@ PUMP_OFF_DURATION = 60 * 120
 class Services:
     PinStruct = namedtuple('Pins', ['lights', 'pump', 'fan'])
 
-    def __init__(self, lights, pump, fan, sensors):
+    def __init__(self, lights, pump, fan, dht):
         self.image_number = 0
         self.camera = PiCamera()
         self.pins = PinStruct(lights=lights, pump=pump, fan=fan)
-        self.sensors = sensors
+        self.dht = dht
 
         for pin in Pins:
             GPIO.setup(pin, GPIO.OUT)
@@ -58,14 +58,14 @@ class Services:
         self.image_number += 1
 
     def update_fan(self):
-        if self.sensors.humidity is None or self.sensors.temperature is None:
+        if self.dht.humidity is None or self.dht.temperature is None:
             print('DHT22 values were None, retrying in 5 seconds...')
             create_timer(5, updateFan)
             return
 
-        fan_speed = map_value(self.sensors.temperature, 20, 28, 0, 100)
+        fan_speed = map_value(self.dht.temperature, 20, 28, 0, 100)
 
-        if self.sensors.temperature < 20:
+        if self.dht.temperature < 20:
             fan_speed = 0
 
         fan.ChangeDutyCycle(fan_speed)

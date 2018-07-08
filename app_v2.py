@@ -27,13 +27,13 @@ def default_error(value):
 
 class App:
     def __init__(self):
-        self.sensor = Sensors(DHT_PIN)
-        self.services = Services(LIGHTS_PIN, PUMP_PIN, FAN_PIN)
+        self.dht = Sensors(DHT_PIN)
+        self.services = Services(LIGHTS_PIN, PUMP_PIN, FAN_PIN, self.dht)
 
 
     def write_sensor_data(self, interval):
-        temperature = default_error(self.sensor.temperature)
-        humidity = default_error(self.sensor.humidity)
+        temperature = default_error(self.dht.temperature)
+        humidity = default_error(self.dht.humidity)
 
         url = 'https://habsci-server.herokuapp.com/services'
         parameters = {
