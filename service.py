@@ -18,7 +18,7 @@ class Services:
 
     def __init__(self, lights, pump, fan, dht):
         self.image_number = 0
-        self.camera = PiCamera()
+        # self.camera = PiCamera()
         self.pins = PinStruct(lights=lights, pump=pump, fan=fan)
         self.dht = dht
 

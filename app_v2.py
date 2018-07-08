@@ -54,13 +54,14 @@ class App:
         create_timer(interval, write_sensor_data, [interval])
 
     def start(self):
-        with open('data.csv', 'w') as file:
-            writer = csv.DictWriter(file, fieldnames=fieldnames)
-            writer.writeheader()
+        # with open('data.csv', 'w') as file:
+        #     writer = csv.DictWriter(file, fieldnames=fieldnames)
+        #     writer.writeheader()
 
-        write_sensor_data(SENSOR_WRITE_INTERVAL)
+        # write_sensor_data(SENSOR_WRITE_INTERVAL)
+        self.services.start()
 
 
-sleep(30)
+# sleep(30)
 app = App()
 app.start()
