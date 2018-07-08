@@ -21,7 +21,7 @@ class Services:
         self.pins = PinStruct(lights=lights, pump=pump, fan=fan)
         self.dht = dht
 
-        for pin in Pins:
+        for pin in self.pins:
             GPIO.setup(pin, GPIO.OUT)
             GPIO.output(pin, LOW)
 
