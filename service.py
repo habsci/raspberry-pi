@@ -12,10 +12,9 @@ LOW = False
 PUMP_ON_DURATION = 60
 PUMP_OFF_DURATION = 60 * 120
 
-
-class Services:
     PinStruct = namedtuple('Pins', ['lights', 'pump', 'fan'])
 
+class Services:
     def __init__(self, lights, pump, fan, dht):
         self.image_number = 0
         # self.camera = PiCamera()
