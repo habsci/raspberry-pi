@@ -57,6 +57,9 @@ class Services:
         self.image_number += 1
 
     def update_fan(self):
+        self.dht.read()
+        print(self.dht.temperature)
+        print(self.dht.humidity)
         if self.dht.humidity is None or self.dht.temperature is None:
             print('DHT22 values were None, retrying in 5 seconds...')
             create_timer(5, updateFan)
