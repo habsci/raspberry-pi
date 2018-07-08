@@ -12,7 +12,7 @@ LOW = False
 PUMP_ON_DURATION = 60
 PUMP_OFF_DURATION = 60 * 120
 
-    PinStruct = namedtuple('Pins', ['lights', 'pump', 'fan'])
+PinStruct = namedtuple('Pins', ['lights', 'pump', 'fan'])
 
 class Services:
     def __init__(self, lights, pump, fan, dht):
