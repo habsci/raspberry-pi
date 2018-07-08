@@ -1,3 +1,4 @@
+from collections import namedtuple
 import Adafruit_DHT
 
 class Sensors:

@@ -139,7 +139,7 @@ def main():
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
 
-    serviceToggle(Pins.lights, HIGH, 60 * 60 * 14, 60 * 60 * 10)
+    serviceToggle(Pins.lights, HIGH, 60 * 60 * 12, 60 * 60 * 12)
     serviceToggle(Pins.pump, HIGH, 60, 60 * 120)
 
     writeSensorData(5 * 60)
