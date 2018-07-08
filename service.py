@@ -46,7 +46,7 @@ class Services:
         interval = on_interval if state else off_interval # Pick the interval based on the state we're switching to
         GPIO.output(pin, state) # Change the state of the service
 
-        create_timer(interval, service_interval, [ pin, not state, on_interval, off_interval ]) # Create a timer to toggle the service
+        create_timer(interval, self.service_interval, [ pin, not state, on_interval, off_interval ]) # Create a timer to toggle the service
 
     def capture_image(self):
         sleep(10)
@@ -67,5 +67,5 @@ class Services:
         if self.dht.temperature < 20:
             fan_speed = 0
 
-        fan.ChangeDutyCycle(fan_speed)
+        self.fan.ChangeDutyCycle(fan_speed)
         create_timer(5, self.update_fan)
